@@ -1,7 +1,7 @@
 # FilenameEdit
 edit multiple filenames at a time
 os: win10  
-ide: qt6.5.3
+ide: qt6
 compiler: msvc 2019
 
 menu->addfile to add files

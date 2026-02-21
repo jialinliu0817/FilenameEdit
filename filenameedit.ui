@@ -16,7 +16,7 @@
   <property name="windowIcon">
    <iconset theme="accessories-text-editor">
     <normaloff>filenameEdit.ico</normaloff>
-   </iconset>
+   </iconset>  
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">

@@ -18,7 +18,10 @@
     <normaloff>filenameEdit.ico</normaloff>filenameEdit.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout" spacing="8">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>8</number>
+    </property>
     <property name="leftMargin">
      <number>10</number>
     </property>
@@ -32,8 +35,10 @@
      <number>10</number>
     </property>
     <item>
-     <!-- Substring removal controls -->
-     <layout class="QHBoxLayout" name="topLayout" spacing="6">
+     <layout class="QHBoxLayout" name="topLayout">
+      <property name="spacing">
+       <number>6</number>
+      </property>
       <item>
        <widget class="QLabel" name="labelRemove">
         <property name="text">
@@ -65,7 +70,6 @@
      </layout>
     </item>
     <item>
-     <!-- File list table: Original Name | Preview Name | Status -->
      <widget class="QTableWidget" name="tableWidget">
       <property name="alternatingRowColors">
        <bool>true</bool>
@@ -103,12 +107,14 @@
      </widget>
     </item>
     <item>
-     <!-- Action buttons -->
-     <layout class="QHBoxLayout" name="bottomLayout" spacing="6">
+     <layout class="QHBoxLayout" name="bottomLayout">
+      <property name="spacing">
+       <number>6</number>
+      </property>
       <item>
        <widget class="QPushButton" name="btnAddFiles">
         <property name="text">
-         <string>Add Files…</string>
+         <string>Add Files&#8230;</string>
         </property>
        </widget>
       </item>
@@ -163,12 +169,36 @@
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuTheme">
+     <property name="title">
+      <string>Theme</string>
+     </property>
+     <addaction name="actionLightTheme"/>
+     <addaction name="actionDarkTheme"/>
+    </widget>
+    <addaction name="menuTheme"/>
+    <addaction name="separator"/>
+    <addaction name="actionWindowOpacity"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+    <addaction name="actionCheckForUpdates"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionAddFiles">
    <property name="text">
-    <string>Add Files…</string>
+    <string>Add Files&#8230;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -180,6 +210,40 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionLightTheme">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Light</string>
+   </property>
+  </action>
+  <action name="actionDarkTheme">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dark</string>
+   </property>
+  </action>
+  <action name="actionWindowOpacity">
+   <property name="text">
+    <string>Window Opacity&#8230;</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About FilenameEdit&#8230;</string>
+   </property>
+  </action>
+  <action name="actionCheckForUpdates">
+   <property name="text">
+    <string>Check for Updates&#8230;</string>
    </property>
   </action>
  </widget>

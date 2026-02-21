@@ -2,48 +2,27 @@
 
 #include <QApplication>
 #include <QStyleFactory>
+#include <QSettings>
+#include "theme.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    // Application identity (used by QSettings)
+    a.setOrganizationName("FilenameEdit");
+    a.setOrganizationDomain("github.com/jialinliu0817/FilenameEdit");
+    a.setApplicationName("FilenameEdit");
+    a.setApplicationVersion("0.1.0");
+
     // Apply Fusion style for a clean, cross-platform look
     a.setStyle(QStyleFactory::create("Fusion"));
 
-    // Minimal light stylesheet for consistent aesthetics
-    a.setStyleSheet(
-        "QMainWindow { background: #f5f5f5; }"
-        "QTableWidget {"
-        "  border: 1px solid #c8c8c8;"
-        "  gridline-color: #e0e0e0;"
-        "  background: #ffffff;"
-        "}"
-        "QHeaderView::section {"
-        "  background: #efefef;"
-        "  border: none;"
-        "  border-right: 1px solid #c8c8c8;"
-        "  border-bottom: 1px solid #c8c8c8;"
-        "  padding: 4px 6px;"
-        "  font-weight: bold;"
-        "}"
-        "QPushButton {"
-        "  min-width: 90px;"
-        "  padding: 4px 12px;"
-        "}"
-        "QPushButton#btnApply {"
-        "  background: #0078d4;"
-        "  color: white;"
-        "  border-radius: 3px;"
-        "}"
-        "QPushButton#btnApply:hover { background: #106ebe; }"
-        "QPushButton#btnApply:disabled { background: #a0c4e8; color: #e0e0e0; }"
-        "QLineEdit {"
-        "  border: 1px solid #c8c8c8;"
-        "  border-radius: 3px;"
-        "  padding: 3px 6px;"
-        "}"
-        "QStatusBar { color: #555555; }"
-    );
+    // Apply persisted theme before showing the window to avoid a visual flash
+    QSettings settings;
+    const Theme::Mode initialTheme =
+        Theme::fromString(settings.value("theme/mode", "Light").toString());
+    Theme::apply(&a, initialTheme);
 
     FilenameEdit w;
     w.show();

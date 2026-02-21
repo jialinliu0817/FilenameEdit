@@ -21,7 +21,20 @@ removing a specified substring from file base names while preserving extensions.
   temporary names, then to their final names, so renaming A→B and B→A works.
 - **Results dialog** – a summary listing every file's outcome (success or
   failure reason) is shown after applying.
-- **Fusion style** with a minimal light QSS for a clean, cross-platform UI.
+- **Light/Dark theme** – switch instantly from *View → Theme* with persistence
+  across restarts.
+- **Adjustable window opacity** – fine-tune transparency via *View → Window
+  Opacity…* (default 0.95) with persistence.
+- **About dialog** – *Help → About FilenameEdit…* shows version, author, and a
+  clickable link to the GitHub repository.
+- **Check for Updates** – *Help → Check for Updates…* queries GitHub Releases;
+  shows a friendly message when no releases exist, or presents download buttons
+  for EXE/ZIP assets when a newer version is available.
+- **Windows 11 Mica effect** *(optional)* – *View → Effects → Mica/Acrylic
+  (Windows 11)* enables a system backdrop on supported builds (≥ 22000) with a
+  safe fallback on older systems and non-Windows platforms.
+- **Modern QSS** – Windows-11-inspired Fusion style with rounded corners,
+  improved spacing, and proper dark-mode palette.
 
 ---
 
@@ -30,7 +43,7 @@ removing a specified substring from file base names while preserving extensions.
 | Component | Version |
 |-----------|---------|
 | OS        | Windows 11 (also works on Linux/macOS) |
-| Qt        | 6.8 (Qt Widgets module) |
+| Qt        | 6.8 (Widgets + Network modules) |
 | Compiler  | MSVC 2022 (x64) |
 | Build tool| CMake ≥ 3.5 |
 | IDE       | Qt Creator *or* Visual Studio 2022 with Qt VS Tools |
@@ -83,6 +96,19 @@ build\Release\FilenameEdit.exe
    reports the outcome for each file.
 5. **Clear** – click *Clear* to remove all entries from the table.
 
+### Menus
+
+| Menu | Item | Description |
+|------|------|-------------|
+| File | Add Files… (`Ctrl+O`) | Open file picker to add files |
+| File | Exit (`Ctrl+Q`) | Quit the application |
+| View | Theme → Light | Switch to light theme |
+| View | Theme → Dark  | Switch to dark theme |
+| View | Window Opacity… | Adjust window transparency (0.20–1.00) |
+| View | Effects → Mica/Acrylic *(Windows 11 only)* | Enable system backdrop |
+| Help | About FilenameEdit… | Show app info, author, and GitHub link |
+| Help | Check for Updates… | Query GitHub Releases for newer versions |
+
 ---
 
 ## Notes
@@ -92,4 +118,6 @@ build\Release\FilenameEdit.exe
 - The application uses a **two-phase rename** strategy: every file is first
   moved to a hidden temporary name, then to its final name.  This makes
   swap and cycle renames (e.g. `a.txt ↔ b.txt`) work correctly.
+- Theme, opacity, and Mica preferences are stored via `QSettings` and restored
+  on the next launch.
 

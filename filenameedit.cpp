@@ -1,6 +1,10 @@
 #include "filenameedit.h"
 #include "./ui_filenameedit.h"
 
+#include "about_dialog.h"
+#include "update_dialog.h"
+#include "theme.h"
+
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QDir>
@@ -11,6 +15,33 @@
 #include <QSet>
 #include <QUuid>
 #include <QApplication>
+#include <QSettings>
+#include <QActionGroup>
+#include <QDialog>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QSlider>
+#include <QDoubleSpinBox>
+#include <QPushButton>
+#include <QCloseEvent>
+
+#ifdef Q_OS_WIN
+#  include <windows.h>
+#  include <dwmapi.h>
+// DWMWA_SYSTEMBACKDROP_TYPE is defined in Windows SDK 10.0.22000+; define it
+// manually so the code compiles against older SDKs.
+#  ifndef DWMWA_SYSTEMBACKDROP_TYPE
+#    define DWMWA_SYSTEMBACKDROP_TYPE 38
+#  endif
+#  ifndef DWMSBT_NONE
+#    define DWMSBT_NONE        0
+#    define DWMSBT_MAINWINDOW  2
+#  endif
+#endif
+
+static constexpr double kMinOpacity     = 0.20;
+static constexpr double kDefaultOpacity = 0.95;
 
 // ---------------------------------------------------------------------------
 // Construction / destruction
@@ -30,6 +61,24 @@ FilenameEdit::FilenameEdit(QWidget *parent)
     hh->setDefaultSectionSize(260);
     ui->tableWidget->verticalHeader()->setVisible(false);
 
+    // Make Light/Dark theme actions mutually exclusive
+    auto *themeGroup = new QActionGroup(this);
+    themeGroup->addAction(ui->actionLightTheme);
+    themeGroup->addAction(ui->actionDarkTheme);
+
+#ifdef Q_OS_WIN
+    // Add Mica/Acrylic toggle under View → Effects (Windows only)
+    auto *menuEffects = new QMenu("Effects", this);
+    auto *actionMica  = new QAction("Mica/Acrylic (Windows 11)", this);
+    actionMica->setCheckable(true);
+    actionMica->setObjectName("actionMicaEffect");
+    menuEffects->addAction(actionMica);
+    ui->menuView->addSeparator();
+    ui->menuView->addMenu(menuEffects);
+    connect(actionMica, &QAction::triggered,
+            this, &FilenameEdit::on_actionMicaEffect_triggered);
+#endif
+
     // Wire up buttons and live-preview on substring change
     connect(ui->btnAddFiles,  &QPushButton::clicked, this, &FilenameEdit::onAddFiles);
     connect(ui->btnPreview,   &QPushButton::clicked, this, &FilenameEdit::onPreview);
@@ -40,6 +89,8 @@ FilenameEdit::FilenameEdit(QWidget *parent)
             this, &FilenameEdit::onSubstringChanged);
     connect(ui->checkBoxCaseInsensitive, &QCheckBox::toggled,
             this, &FilenameEdit::onSubstringChanged);
+
+    loadSettings();
 }
 
 FilenameEdit::~FilenameEdit()
@@ -48,7 +99,53 @@ FilenameEdit::~FilenameEdit()
 }
 
 // ---------------------------------------------------------------------------
-// Menu actions
+// Settings
+// ---------------------------------------------------------------------------
+
+void FilenameEdit::loadSettings()
+{
+    QSettings settings;
+
+    // Theme
+    const QString themeStr = settings.value("theme/mode", "Light").toString();
+    m_theme = Theme::fromString(themeStr, Theme::Mode::Light);
+    applyTheme(m_theme);
+
+    // Opacity (default 0.95)
+    const double opacity = settings.value("window/opacity", kDefaultOpacity).toDouble();
+    setWindowOpacity(qBound(kMinOpacity, opacity, 1.0));
+}
+
+void FilenameEdit::saveSettings()
+{
+    QSettings settings;
+    settings.setValue("theme/mode",    Theme::toString(m_theme));
+    settings.setValue("window/opacity", windowOpacity());
+#ifdef Q_OS_WIN
+    settings.setValue("window/mica", m_micaEnabled);
+#endif
+}
+
+void FilenameEdit::closeEvent(QCloseEvent *event)
+{
+    saveSettings();
+    QMainWindow::closeEvent(event);
+}
+
+// ---------------------------------------------------------------------------
+// Theme helpers
+// ---------------------------------------------------------------------------
+
+void FilenameEdit::applyTheme(Theme::Mode mode)
+{
+    m_theme = mode;
+    Theme::apply(qApp, mode);
+    ui->actionLightTheme->setChecked(mode == Theme::Mode::Light);
+    ui->actionDarkTheme->setChecked(mode  == Theme::Mode::Dark);
+}
+
+// ---------------------------------------------------------------------------
+// Menu actions – File
 // ---------------------------------------------------------------------------
 
 void FilenameEdit::on_actionAddFiles_triggered()
@@ -60,6 +157,149 @@ void FilenameEdit::on_actionExit_triggered()
 {
     QApplication::quit();
 }
+
+// ---------------------------------------------------------------------------
+// Menu actions – View
+// ---------------------------------------------------------------------------
+
+void FilenameEdit::on_actionLightTheme_triggered()
+{
+    applyTheme(Theme::Mode::Light);
+    QSettings().setValue("theme/mode", Theme::toString(Theme::Mode::Light));
+}
+
+void FilenameEdit::on_actionDarkTheme_triggered()
+{
+    applyTheme(Theme::Mode::Dark);
+    QSettings().setValue("theme/mode", Theme::toString(Theme::Mode::Dark));
+}
+
+void FilenameEdit::on_actionWindowOpacity_triggered()
+{
+    auto *dlg = new QDialog(this);
+    dlg->setWindowTitle("Window Opacity");
+    dlg->setWindowFlags(dlg->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    dlg->setFixedSize(340, 130);
+
+    auto *layout = new QVBoxLayout(dlg);
+    layout->setContentsMargins(20, 16, 20, 12);
+    layout->setSpacing(10);
+
+    auto *row1 = new QHBoxLayout;
+    row1->addWidget(new QLabel("Opacity:", dlg));
+    auto *slider  = new QSlider(Qt::Horizontal, dlg);
+    slider->setRange(static_cast<int>(kMinOpacity * 100), 100);
+    slider->setValue(qRound(windowOpacity() * 100.0));
+    slider->setTickInterval(10);
+    auto *spinBox = new QDoubleSpinBox(dlg);
+    spinBox->setRange(kMinOpacity, 1.00);
+    spinBox->setSingleStep(0.05);
+    spinBox->setDecimals(2);
+    spinBox->setValue(windowOpacity());
+    spinBox->setFixedWidth(64);
+    row1->addWidget(slider, 1);
+    row1->addWidget(spinBox);
+    layout->addLayout(row1);
+
+    // Sync slider ↔ spinbox
+    connect(slider, &QSlider::valueChanged, dlg, [spinBox, this](int v) {
+        const double op = v / 100.0;
+        spinBox->blockSignals(true);
+        spinBox->setValue(op);
+        spinBox->blockSignals(false);
+        setWindowOpacity(op);
+    });
+    connect(spinBox, &QDoubleSpinBox::valueChanged, dlg, [slider, this](double v) {
+        slider->blockSignals(true);
+        slider->setValue(qRound(v * 100.0));
+        slider->blockSignals(false);
+        setWindowOpacity(v);
+    });
+
+    auto *btnRow = new QHBoxLayout;
+    btnRow->addStretch();
+    auto *okBtn = new QPushButton("OK", dlg);
+    okBtn->setDefault(true);
+    okBtn->setMinimumWidth(72);
+    connect(okBtn, &QPushButton::clicked, dlg, &QDialog::accept);
+    auto *cancelBtn = new QPushButton("Cancel", dlg);
+    cancelBtn->setMinimumWidth(72);
+    const double origOpacity = windowOpacity();
+    connect(cancelBtn, &QPushButton::clicked, dlg, [this, origOpacity, dlg]() {
+        setWindowOpacity(origOpacity);
+        dlg->reject();
+    });
+    btnRow->addWidget(okBtn);
+    btnRow->addWidget(cancelBtn);
+    layout->addLayout(btnRow);
+
+    if (dlg->exec() == QDialog::Accepted)
+        QSettings().setValue("window/opacity", windowOpacity());
+}
+
+// ---------------------------------------------------------------------------
+// Menu actions – Help
+// ---------------------------------------------------------------------------
+
+void FilenameEdit::on_actionAbout_triggered()
+{
+    AboutDialog dlg(this);
+    dlg.exec();
+}
+
+void FilenameEdit::on_actionCheckForUpdates_triggered()
+{
+    UpdateDialog dlg(QApplication::applicationVersion(), this);
+    dlg.exec();
+}
+
+// ---------------------------------------------------------------------------
+// Windows 11 Mica/Acrylic effect (guarded)
+// ---------------------------------------------------------------------------
+
+#ifdef Q_OS_WIN
+void FilenameEdit::on_actionMicaEffect_triggered()
+{
+    // Find the actionMicaEffect action to read its current check state
+    QAction *action = findChild<QAction *>("actionMicaEffect");
+    const bool enable = action ? action->isChecked() : false;
+    if (!applyMicaEffect(enable) && enable) {
+        if (action) action->setChecked(false);
+        QMessageBox::information(this, "Mica Effect",
+            "The Mica/Acrylic effect is only supported on Windows 11 (build 22000+).\n"
+            "Your system does not support this feature.");
+    } else {
+        m_micaEnabled = enable;
+        QSettings().setValue("window/mica", m_micaEnabled);
+    }
+}
+
+bool FilenameEdit::applyMicaEffect(bool enable)
+{
+    // Use RtlGetVersion to reliably detect Windows 11 (build 22000+) at runtime.
+    // VerifyVersionInfoW is deprecated and subject to compatibility shims.
+    typedef NTSTATUS (WINAPI *RtlGetVersionFn)(PRTL_OSVERSIONINFOW);
+    HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+    if (!ntdll)
+        return false;
+    auto rtlGetVersion =
+        reinterpret_cast<RtlGetVersionFn>(GetProcAddress(ntdll, "RtlGetVersion"));
+    if (!rtlGetVersion)
+        return false;
+    RTL_OSVERSIONINFOW rovi{};
+    rovi.dwOSVersionInfoSize = sizeof(rovi);
+    if (rtlGetVersion(&rovi) != 0)   // STATUS_SUCCESS == 0
+        return false;
+    if (rovi.dwBuildNumber < 22000)
+        return false;   // not Windows 11+
+
+    HWND hwnd = reinterpret_cast<HWND>(winId());
+    DWORD backdropType = enable ? DWMSBT_MAINWINDOW : DWMSBT_NONE;
+    HRESULT hr = DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE,
+                                       &backdropType, sizeof(backdropType));
+    return SUCCEEDED(hr);
+}
+#endif
 
 // ---------------------------------------------------------------------------
 // Button slots

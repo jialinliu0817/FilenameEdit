@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(FilenameEdit VERSION 0.1 LANGUAGES CXX)
+project(FilenameEdit VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -11,14 +11,20 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network)
 
 set(PROJECT_SOURCES
         main.cpp
         filenameedit.cpp
         filenameedit.h
         filenameedit.ui
+        theme.cpp
+        theme.h
+        about_dialog.cpp
+        about_dialog.h
+        update_dialog.cpp
+        update_dialog.h
         res.rc
 )
 
@@ -45,7 +51,15 @@ else()
     endif()
 endif()
 
-target_link_libraries(FilenameEdit PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(FilenameEdit PRIVATE
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Network
+)
+
+# Link DWM library for the optional Mica/Acrylic effect on Windows
+if(WIN32)
+    target_link_libraries(FilenameEdit PRIVATE Dwmapi)
+endif()
 
 set_target_properties(FilenameEdit PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

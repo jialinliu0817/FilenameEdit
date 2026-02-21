@@ -18,7 +18,10 @@
     <normaloff>filenameEdit.ico</normaloff>filenameEdit.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout" spacing="8">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>8</number>
+    </property>
     <property name="leftMargin">
      <number>10</number>
     </property>
@@ -33,7 +36,10 @@
     </property>
     <item>
      <!-- Substring removal controls -->
-     <layout class="QHBoxLayout" name="topLayout" spacing="6">
+     <layout class="QHBoxLayout" name="topLayout">
+      <property name="spacing">
+       <number>6</number>
+      </property>
       <item>
        <widget class="QLabel" name="labelRemove">
         <property name="text">
@@ -104,7 +110,10 @@
     </item>
     <item>
      <!-- Action buttons -->
-     <layout class="QHBoxLayout" name="bottomLayout" spacing="6">
+     <layout class="QHBoxLayout" name="bottomLayout">
+      <property name="spacing">
+       <number>6</number>
+      </property>
       <item>
        <widget class="QPushButton" name="btnAddFiles">
         <property name="text">

@@ -1,8 +1,10 @@
 # FilenameEdit
 edit multiple filenames at a time
-os: win10  
-ide: qt6
-compiler: msvc 2019
+os: win11  
+ide: Qt 6.8 / Qt Creator
+compiler: msvc 2022
+
+> **Note:** Qt Creator user-specific files (`*.user`, `*.user.*`, `.qtcreator/`) are listed in `.gitignore` and are not tracked by this repository.
 
 menu->addfile to add files
 

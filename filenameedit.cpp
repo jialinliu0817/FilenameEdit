@@ -562,4 +562,3 @@ void FilenameEdit::onApply()
     ui->statusbar->showMessage(
         anyError ? "Some renames failed – see the summary." : "All renames completed.", 5000);
 }
-

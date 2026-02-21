@@ -15,7 +15,8 @@
   </property>
   <property name="windowIcon">
    <iconset theme="accessories-text-editor">
-    <normaloff>filenameEdit.ico</normaloff>filenameEdit.ico</iconset>
+    <normaloff>filenameEdit.ico</normaloff>
+   </iconset>  
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -83,11 +84,11 @@
       <property name="columnCount">
        <number>3</number>
       </property>
-      <attribute name="horizontalHeaderStretchLastSection">
-       <bool>true</bool>
-      </attribute>
       <attribute name="horizontalHeaderMinimumSectionSize">
        <number>100</number>
+      </attribute>
+      <attribute name="horizontalHeaderStretchLastSection">
+       <bool>true</bool>
       </attribute>
       <column>
        <property name="text">

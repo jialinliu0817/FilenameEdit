@@ -49,7 +49,7 @@ AboutDialog::AboutDialog(QWidget *parent)
     // GitHub link
     auto *linkLabel = new QLabel(
         "<a href=\"https://github.com/jialinliu0817/FilenameEdit\">"
-        "github.com/jialinliu0817/FilenameEdit</a>",
+        "FilenameEdit</a>",
         this);
     linkLabel->setAlignment(Qt::AlignCenter);
     linkLabel->setOpenExternalLinks(true);

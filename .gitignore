@@ -1,1 +1,6 @@
 build/
+
+# Qt Creator user-specific files
+*.user
+*.user.*
+.qtcreator/

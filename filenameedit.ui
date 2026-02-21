@@ -6,123 +6,139 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>600</height>
+    <width>820</width>
+    <height>560</height>
    </rect>
-  </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>FilenameEdit</string>
   </property>
   <property name="windowIcon">
    <iconset theme="accessories-text-editor">
-    <normaloff>filenameEdit.ico</normaloff>
-    <normalon>filenameEdit.ico</normalon>
-    <disabledoff>filenameEdit.ico</disabledoff>
-    <disabledon>filenameEdit.ico</disabledon>
-    <activeoff>filenameEdit.ico</activeoff>
-    <activeon>filenameEdit.ico</activeon>
-    <selectedoff>filenameEdit.ico</selectedoff>
-    <selectedon>filenameEdit.ico</selectedon>filenameEdit.ico</iconset>
-  </property>
-  <property name="styleSheet">
-   <string notr="true"/>
+    <normaloff>filenameEdit.ico</normaloff>filenameEdit.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="2" column="0" colspan="2">
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout" spacing="8">
+    <property name="leftMargin">
+     <number>10</number>
+    </property>
+    <property name="topMargin">
+     <number>10</number>
+    </property>
+    <property name="rightMargin">
+     <number>10</number>
+    </property>
+    <property name="bottomMargin">
+     <number>10</number>
+    </property>
+    <item>
+     <!-- Substring removal controls -->
+     <layout class="QHBoxLayout" name="topLayout" spacing="6">
       <item>
-       <widget class="QTextEdit" name="textEdit_2">
-        <property name="styleSheet">
-         <string notr="true"/>
+       <widget class="QLabel" name="labelRemove">
+        <property name="text">
+         <string>Remove substring:</string>
         </property>
-        <property name="lineWidth">
-         <number>1</number>
-        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEditSubstring">
         <property name="placeholderText">
-         <string>after delete the text above</string>
+         <string>Enter text to remove from file names</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxCaseInsensitive">
+        <property name="text">
+         <string>Case-insensitive</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnPreview">
+        <property name="text">
+         <string>Preview</string>
         </property>
        </widget>
       </item>
      </layout>
     </item>
-    <item row="1" column="0">
-     <widget class="QPushButton" name="pushButton">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>100</width>
-        <height>20</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>100</width>
-        <height>20</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Delete</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QLineEdit" name="lineEdit">
-      <property name="enabled">
+    <item>
+     <!-- File list table: Original Name | Preview Name | Status -->
+     <widget class="QTableWidget" name="tableWidget">
+      <property name="alternatingRowColors">
        <bool>true</bool>
       </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
       </property>
-      <property name="minimumSize">
-       <size>
-        <width>200</width>
-        <height>20</height>
-       </size>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
       </property>
-      <property name="maximumSize">
-       <size>
-        <width>1900</width>
-        <height>20</height>
-       </size>
+      <property name="columnCount">
+       <number>3</number>
       </property>
-      <property name="placeholderText">
-       <string>input the text that will be deleted </string>
-      </property>
+      <attribute name="horizontalHeaderStretchLastSection">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="horizontalHeaderMinimumSectionSize">
+       <number>100</number>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>Original Name</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Preview Name</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Status</string>
+       </property>
+      </column>
      </widget>
     </item>
-    <item row="0" column="0" colspan="2">
-     <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <!-- Action buttons -->
+     <layout class="QHBoxLayout" name="bottomLayout" spacing="6">
       <item>
-       <widget class="QTextEdit" name="textEdit">
-        <property name="sizeIncrement">
+       <widget class="QPushButton" name="btnAddFiles">
+        <property name="text">
+         <string>Add Files…</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnClear">
+        <property name="text">
+         <string>Clear</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>5</width>
-          <height>0</height>
+          <width>40</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="styleSheet">
-         <string notr="true"/>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnApply">
+        <property name="text">
+         <string>Apply (Rename)</string>
         </property>
-        <property name="sizeAdjustPolicy">
-         <enum>QAbstractScrollArea::AdjustToContents</enum>
-        </property>
-        <property name="placeholderText">
-         <string>originnal filename</string>
+        <property name="enabled">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -135,26 +151,35 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>600</width>
-     <height>21</height>
+     <width>820</width>
+     <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuMenu">
+   <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>Menu</string>
+     <string>File</string>
     </property>
-    <addaction name="actionAdd_File"/>
+    <addaction name="actionAddFiles"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
    </widget>
-   <addaction name="menuMenu"/>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionAdd_File">
-   <property name="icon">
-    <iconset>
-     <normaloff>../build-FilenameEdit-Desktop_Qt_6_5_3_MSVC2019_64bit-Debug/filenameEdit.ico</normaloff>../build-FilenameEdit-Desktop_Qt_6_5_3_MSVC2019_64bit-Debug/filenameEdit.ico</iconset>
-   </property>
+  <action name="actionAddFiles">
    <property name="text">
-    <string>Add File</string>
+    <string>Add Files…</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
  </widget>
